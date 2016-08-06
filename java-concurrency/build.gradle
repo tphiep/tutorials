@@ -8,9 +8,10 @@ compileJava{
 
 
 repositories{
+	mavenLocal();
 	jcenter();
 }
 
 dependencies{
-	
+	compile 'com.google.guava:guava:19.0'
 }

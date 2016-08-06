@@ -12,6 +12,14 @@ public class AtomicCounter {
         this.count.incrementAndGet();
     }
 
+    public int increaseLongVersion(){
+        int oldValue = this.count.get();
+        while(!this.count.compareAndSet(oldValue, oldValue + 1)) {
+            oldValue = this.count.get(); // reset old value
+        }
+        return oldValue + 1;
+    }
+
     public int getCount() {
         return count.get();
     }
