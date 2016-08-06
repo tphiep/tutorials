@@ -1,2 +1,2 @@
 # tutorials
-Java examples
+Java EE examples
