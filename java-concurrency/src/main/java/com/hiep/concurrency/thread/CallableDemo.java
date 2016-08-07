@@ -22,6 +22,7 @@ public class CallableDemo {
         ExecutorService executorService = Executors.newFixedThreadPool(3);
 
         try {
+            // Waiting for other threads finished theirs task to accumulate result
             List<Future<String>> futures = executorService.invokeAll(callables);
             for (Future<String> future : futures){
                 System.out.println(future.get());
