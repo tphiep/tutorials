@@ -74,7 +74,8 @@ public class PreMockJUnit4ClassRunner extends BlockJUnit4ClassRunner {
         // redo/duplicate what BlockJunit4ClassRunner is doing.
         try {
             for (Field field : ParentRunner.class.getDeclaredFields()) {
-                if ("fTestClass".equals(field.getName())) {
+                // Junit 4.11 field name is fTestClass
+                if ("testClass".equals(field.getName())) {
                     field.setAccessible(true);
                     field.set(this, testClass);
                     break;

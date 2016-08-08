@@ -1,0 +1,33 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+archivesBaseName = 'server-script'
+version = '1.0'
+//create a single Jar with all dependencies
+task fatJar(type: Jar) {
+	manifest {
+		attributes 'Implementation-Title': 'An example of server script',
+				'Implementation-Version': version,
+				'Main-Class': 'com.hiep.scripts.RunApplication'
+	}
+	baseName = project.name + '-all'
+	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+	with jar
+}
+repositories {
+//	maven {
+//		url="http://sgnexus.hpswlabs.adapps.hp.com:8081/nexus/content/groups/public/"
+//	}
+	mavenLocal()
+	mavenCentral()
+}
+dependencies {
+
+	compile "org.springframework:spring-core:$springVersion"
+	compile "org.springframework:spring-beans:$springVersion"
+	compile "org.springframework:spring-context:$springVersion"
+	compile "org.springframework:spring-test:$springVersion"
+	compile "com.google.code.gson:gson:$gsonVersion"
+
+	testCompile "junit:junit:$junitVersion"
+	testCompile "org.hamcrest:hamcrest-library:$hamcrestVersion"
+}
