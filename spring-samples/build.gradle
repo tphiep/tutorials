@@ -1,0 +1,79 @@
+buildscript {
+	ext {
+		environmentFileDir = "profiles"
+		propertiesPluginEnvironmentNameProperty = "env"
+	}
+}
+
+plugins {
+	id "idea"
+	id "net.saliman.properties" version "1.4.6"
+}
+
+def profiles = ["local"]
+
+if (!profiles.contains(profile)) {
+	throw new GradleException("""
+        profile $profile is not supported.
+        supported profiles: $profiles
+    """)
+}
+
+println "active profile is: $profile"
+
+def libs = [
+		"common-utils",
+]
+
+tasks.create("install") { task ->
+	libs.each { projectName ->
+		dependsOn gradle.includedBuild(projectName).task(":install")
+	}
+}
+
+def projectNames = [
+		"spring-security",
+
+]
+
+// gradle clean build
+def previous = ":clean"
+
+["clean", "assemble", "test", "check", "build"].each { taskName ->
+
+	tasks.create(taskName) { task ->
+
+		def current = ":$taskName"
+
+		projectNames.each { projectName ->
+
+			def projectBuild = gradle.includedBuild(projectName)
+			def projectTask = projectBuild.task(current)
+
+			dependsOn projectTask, ":install"
+
+			if (":clean" == previous) return
+//			shouldRunAfter previous, ":composeUp"
+		}
+		previous = current
+	}
+}
+
+/**
+ * Spring bootRun: gradle composeUp bootRun-producer
+ */
+
+projectNames.each { projectName ->
+
+	def bootRunTaskName = "bootRun"
+	def taskName = projectName.replace("streaming", bootRunTaskName)
+
+	tasks.create(taskName) { task ->
+		dependsOn gradle.includedBuild(projectName).task(":$bootRunTaskName")
+	}
+}
+
+
+task wrapper(type: Wrapper) {
+	gradleVersion = "4.2.1"
+}
